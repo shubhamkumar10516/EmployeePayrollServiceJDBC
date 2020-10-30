@@ -2,7 +2,11 @@ package EmployeePayrollService;
 
 import static org.junit.Assert.assertEquals;
 import java.util.Arrays;
+import java.util.List;
+
 import org.junit.Test;
+
+import EmployeePayrollService.EmployeePayrollService.IOService;
 
 
 public class EmployeePayrollServiceTest {
@@ -35,5 +39,12 @@ public class EmployeePayrollServiceTest {
 		EmployeePayrollService empService = new EmployeePayrollService();
 		long count = empService.readEmployeePayrollData(IOService.FILE_IO);
 		assertEquals(3, count);
+	}
+	
+	@Test
+	public void returnCountOfEmployeeFromDB() {
+		EmployeePayrollService empService = new EmployeePayrollService();
+	    List<EmployeePayrollData> employeePayrollData = empService.readEmployeePayrollDatas(IOService.DB_IO);
+	    assertEquals(3, employeePayrollData.size());
 	}
 }
