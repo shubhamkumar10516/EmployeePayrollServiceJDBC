@@ -5,7 +5,7 @@ import java.util.*;
 public class EmployeePayrollService 
 {
 	enum IOService {
-		CONSOLE_IO,FILE_IO
+		CONSOLE_IO,FILE_IO, DB_IO
 	}
     //list of employee
 	private List<EmployeePayrollData> employeePayrollList;
@@ -28,6 +28,12 @@ public class EmployeePayrollService
 		System.out.println("Enter employee salary: ");
 		double salary = consoleInputReader.nextDouble();
 		employeePayrollList.add( new EmployeePayrollData(id, name, salary));
+	}
+	
+	//read from database
+	public List<EmployeePayrollData> readEmployeePayrollDatas(IOService iService){
+		this.employeePayrollList = new EmployeePayrollDBService().readData();	
+		return employeePayrollList;
 	}
 	
 	// output on the console
