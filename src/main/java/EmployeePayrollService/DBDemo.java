@@ -7,7 +7,7 @@ import java.sql.Statement;
 
 public class DBDemo {
 
-	/*public static void main(String[] args) {
+	public static void main(String[] args) {
 		String jdbcURL = "jdbc:mysql://localhost:3306/new_payroll_service?useSSL=false";
 		String user = "root";
 		String password = "password";
@@ -28,5 +28,5 @@ public class DBDemo {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}*/
+	}
 }
