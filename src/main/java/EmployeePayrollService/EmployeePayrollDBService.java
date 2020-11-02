@@ -3,13 +3,17 @@ package EmployeePayrollService;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class EmployeePayrollDBService {
 
 	private PreparedStatement employeePayrollDataStatement;
 	private static EmployeePayrollDBService employeePayrollDBService;
-
+	HashMap<String, Integer> operationMap;
+	private List<EmployeePayrollData> employeePayrollList;
+	
 	private EmployeePayrollDBService() {
 
 	}
@@ -36,7 +40,7 @@ public class EmployeePayrollDBService {
 
 	public List<EmployeePayrollData> readData() {
 		String sql = "SELECT * from employee_payroll;";
-		List<EmployeePayrollData> employeePayrollList = new ArrayList<>();
+		employeePayrollList = new ArrayList<>();
 		Connection connection = this.getConnection();
 		try {
 			Statement statement = connection.createStatement();
@@ -72,22 +76,22 @@ public class EmployeePayrollDBService {
 	}
 
 	public List<EmployeePayrollData> getEmployeePayrollData(String name) {
-		List<EmployeePayrollData> employeePayroList = new ArrayList<>();
+		 employeePayrollList = new ArrayList<>();
 		if (this.employeePayrollDataStatement == null)
 			this.prepareStatementForEmployeeData();
 		try {
 			employeePayrollDataStatement.setString(1, name);
 			ResultSet resultSet = employeePayrollDataStatement.executeQuery();
-			employeePayroList = this.getEmployeePayrollData(resultSet);
+			employeePayrollList = this.getEmployeePayrollData(resultSet);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return employeePayroList;
+		return employeePayrollList;
 	}
 
 	private List<EmployeePayrollData> getEmployeePayrollData(ResultSet result) {
 
-		List<EmployeePayrollData> employeePayrollList = new ArrayList<>();
+		employeePayrollList = new ArrayList<>();
 		try {
 			while (result.next()) {
 				int id = result.getInt("id");
@@ -121,7 +125,7 @@ public class EmployeePayrollDBService {
 	}
 
 	private List<EmployeePayrollData> getDataFromDatabaseBySQL(String sql) {
-		List<EmployeePayrollData> employeePayrollList = new ArrayList<>();
+		employeePayrollList = new ArrayList<>();
 		try (Connection connection = this.getConnection()) {
 			Statement statement = connection.createStatement();
 			ResultSet resultSet = statement.executeQuery(sql);
@@ -133,11 +137,29 @@ public class EmployeePayrollDBService {
 				employeePayrollList.add(new EmployeePayrollData(id, name, salary, start));
 			}
 			return employeePayrollList;
-		// } catch(EmployeeCustomException e) {
+			// } catch(EmployeeCustomException e) {
 			// throw new EmployeeCustomException(e.getMessage(),e.type);
-		 //}
+			// }
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public Map<String, Integer> getCountByGender() {
+		String sql = "SELECT gender, COUNT(name) from employee_payroll_1 GROUP BY gender;";
+		operationMap = new HashMap<String, Integer>();
+		try (Connection connection = this.getConnection()) {
+			Statement statement = connection.createStatement();
+			ResultSet resultSet = statement.executeQuery(sql);
+			while (resultSet.next()) {
+				String gender = resultSet.getString("gender");
+				int count = resultSet.getInt("COUNT(name)");
+				operationMap.put(gender, count);
+			}
+			return operationMap;
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return null;

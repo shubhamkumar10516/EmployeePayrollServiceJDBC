@@ -99,4 +99,10 @@ public class EmployeePayrollService {
 			this.employeePayrollList = employeePayrollDBService.getDataWithinDates(start, end);
 		return this.employeePayrollList;
 	}
+
+
+	public Map<String, Integer> getCountByGender(IOService dbIo) {
+		Map<String, Integer> employeeCountByGenderMap = employeePayrollDBService.getCountByGender();
+		return  employeeCountByGenderMap;
+	}
 }
