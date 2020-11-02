@@ -84,4 +84,13 @@ public class EmployeePayrollServiceTest {
 		assertEquals((int) map.get("M"), 1000000);
 		assertEquals((int) map.get("F"), 3000000);
 	}
+	
+	@Test
+	public void givenEmployeeDataInDBReturnEmployeeByGenderByAverageSalary() throws EmployeeException {
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+		Map<String, Integer> map = employeePayrollService.getAverageSalaryByGender();
+		assertEquals((int) map.get("M"), 2000000);
+		assertEquals((int) map.get("F"), 3000000);
+	}
+	
 }
