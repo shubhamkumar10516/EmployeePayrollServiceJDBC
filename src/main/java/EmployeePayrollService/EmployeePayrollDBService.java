@@ -182,4 +182,22 @@ public class EmployeePayrollDBService {
 			return null;
 		}
 	}
+
+	public Map<String, Integer> getAverageSalaryByGender() {
+		String sql = "SELECT gender, AVG(salary) from employee_payroll_1 GROUP BY gender;";
+		operationMap = new HashMap<String, Integer>();
+		try (Connection connection = this.getConnection()) {
+			java.sql.Statement statement = connection.createStatement();
+			ResultSet resultSet = statement.executeQuery(sql);
+			while (resultSet.next()) {
+				String gender = resultSet.getString("gender");
+				int count = resultSet.getInt("AVG(salary)");
+				operationMap.put(gender, count);
+			}
+			return operationMap;
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 }

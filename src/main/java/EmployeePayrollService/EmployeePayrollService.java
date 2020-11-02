@@ -111,4 +111,10 @@ public class EmployeePayrollService {
 		Map<String, Integer> employeeLeastSalaryMap = employeePayrollDBService.getLeastSalaryByGender();
 		return employeeLeastSalaryMap;
 	}
+
+
+	public Map<String, Integer> getAverageSalaryByGender() {
+		Map<String, Integer> employeeAverageSalaryMap = employeePayrollDBService.getAverageSalaryByGender();
+		return employeeAverageSalaryMap;
+	}
 }
