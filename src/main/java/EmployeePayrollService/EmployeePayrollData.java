@@ -5,8 +5,8 @@ import java.time.LocalDate;
 public class EmployeePayrollData {
 
 	private int id;
-	private String name;
-	private double salary;
+	public String name;
+	public double salary;
 	private LocalDate startDate; 
 	public EmployeePayrollData(int id, String name, double salary) {
 		this.id = id;

@@ -2,20 +2,24 @@ package EmployeePayrollService;
 
 import java.util.*;
 
-public class EmployeePayrollService 
-{
+public class EmployeePayrollService {
 	enum IOService {
-		CONSOLE_IO,FILE_IO, DB_IO
+		CONSOLE_IO, FILE_IO, DB_IO
 	}
-    //list of employee
+
+	// list of employee
 	private List<EmployeePayrollData> employeePayrollList;
-	
+    private EmployeePayrollDBService employeePayrollDBService;
+    
+    
 	public EmployeePayrollService(List<EmployeePayrollData> employeePayrollList) {
+		this();
 		this.employeePayrollList = employeePayrollList;
 	}
+
 	
 	public EmployeePayrollService() {
-		// TODO Auto-generated constructor stub
+		employeePayrollDBService = EmployeePayrollDBService.getInstance();
 	}
 
 	// takes input from console
@@ -27,44 +31,72 @@ public class EmployeePayrollService
 		String name = consoleInputReader.nextLine();
 		System.out.println("Enter employee salary: ");
 		double salary = consoleInputReader.nextDouble();
-		employeePayrollList.add( new EmployeePayrollData(id, name, salary));
+		employeePayrollList.add(new EmployeePayrollData(id, name, salary));
 	}
-	
-	//read from database
-	public List<EmployeePayrollData> readEmployeePayrollDatas(IOService iService){
-		this.employeePayrollList = new EmployeePayrollDBService().readData();	
+
+	// read from database
+	public List<EmployeePayrollData> readEmployeePayrollDatas(IOService iService) {
+		this.employeePayrollList = employeePayrollDBService.readData();
 		return employeePayrollList;
 	}
-	
+
+	// update database
+	public int updateSalary(String name, double salary) {
+		int result = employeePayrollDBService.updateEmpSalary(name, salary);
+		if (result == 0)
+			return 0;
+		EmployeePayrollData employeePayrollData = this.getEmployeePayrollData(name);
+		if (employeePayrollData != null)
+			employeePayrollData.salary = salary;
+		return result;
+	}
+
+	private EmployeePayrollData getEmployeePayrollData(String name) {
+		return this.employeePayrollList.stream().filter(employeeData -> employeeData.name.equals(name)).findFirst()
+				.orElse(null);
+	}
+
+	public boolean checkEmployeePayrollSynWithDB(String name) {
+		List<EmployeePayrollData> employeePayrollDataList = employeePayrollDBService.getEmployeePayrollData(name);
+		return employeePayrollDataList.get(0).equals(getEmployeePayrollData(name));
+	}
+
 	// output on the console
 	public void writeEmployeePayrollData(IOService ioService) {
-		if(ioService.equals(IOService.CONSOLE_IO)) {
-		System.out.println("employee details :: ");
-		for(EmployeePayrollData e : employeePayrollList) {
-			e.display();
-		}}
-		else if(ioService.equals(IOService.FILE_IO)) {
+		if (ioService.equals(IOService.CONSOLE_IO)) {
+			System.out.println("employee details :: ");
+			for (EmployeePayrollData e : employeePayrollList) {
+				e.display();
+			}
+		} else if (ioService.equals(IOService.FILE_IO)) {
 			new EmployeePayrolFileIOService().writeData(employeePayrollList);
 		}
 	}
-    
+
 	// print data according io services
 	public void printData(IOService ioServices) {
-	    if(ioServices.equals(IOService.FILE_IO))
-	    	new EmployeePayrolFileIOService().printData();
+		if (ioServices.equals(IOService.FILE_IO))
+			new EmployeePayrolFileIOService().printData();
 	}
 
 	// counting the entries
 	public long countEntries(IOService fileIo) {
-		if(fileIo.equals(IOService.FILE_IO))
+		if (fileIo.equals(IOService.FILE_IO))
 			return new EmployeePayrolFileIOService().countEntries();
 		return 0;
 	}
-	
+
 	public long readEmployeePayrollData(IOService ioService) {
-		if(ioService.equals(IOService.FILE_IO)) {
-			this.employeePayrollList = new EmployeePayrolFileIOService().readData(); 
+		if (ioService.equals(IOService.FILE_IO)) {
+			this.employeePayrollList = new EmployeePayrolFileIOService().readData();
 		}
 		return this.employeePayrollList.size();
+	}
+
+
+	public List<EmployeePayrollData> readEmployeePayrollDataByDate(IOService dbIo, String start, String end) {
+		if(dbIo.equals(IOService.DB_IO))
+			this.employeePayrollList = employeePayrollDBService.getDataWithinDates(start, end);
+		return this.employeePayrollList;
 	}
 }
