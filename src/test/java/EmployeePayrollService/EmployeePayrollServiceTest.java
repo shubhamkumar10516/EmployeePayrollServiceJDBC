@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -66,5 +67,21 @@ public class EmployeePayrollServiceTest {
 		List<EmployeePayrollData> employeePayrollData = employeePayrollService.readEmployeePayrollDataByDate(IOService.DB_IO, "2016-01-01","2020-01-01");
 		System.out.println(employeePayrollData);
 		assertEquals(2, employeePayrollData.size());
+	}
+	
+	@Test
+	public void givenEmployeeDataInDBReturnCountOfEmployee() throws EmployeeCustomException {
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+		Map<String, Integer> map = employeePayrollService.getCountByGender(IOService.DB_IO);
+		assertEquals((int) map.get("M"), 2);
+		assertEquals((int) map.get("F"), 1);
+	}
+	
+	@Test
+	public void givenEmployeeDataInDBReturnEmployeeByGenderByMinSalary() throws EmployeeCustomException {
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+		Map<String, Integer> map = employeePayrollService.getLeastSalaryByGender();
+		assertEquals((int) map.get("M"), 1000000);
+		assertEquals((int) map.get("F"), 3000000);
 	}
 }
