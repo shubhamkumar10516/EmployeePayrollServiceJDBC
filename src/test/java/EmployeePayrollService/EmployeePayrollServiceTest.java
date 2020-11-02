@@ -1,6 +1,8 @@
 package EmployeePayrollService;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -46,5 +48,23 @@ public class EmployeePayrollServiceTest {
 		EmployeePayrollService empService = new EmployeePayrollService();
 	    List<EmployeePayrollData> employeePayrollData = empService.readEmployeePayrollDatas(IOService.DB_IO);
 	    assertEquals(3, employeePayrollData.size());
+	}
+	
+	@Test
+	public void updatesalaryAndSynWithDatabase() {
+		EmployeePayrollService empService = new EmployeePayrollService();
+	 //   List<EmployeePayrollData> employeePayrollData = empService.readEmployeePayrollDatas(IOService.DB_IO);
+	    int result = empService.updateSalary("ram", 300000.00);
+	    //assertTrue(1 == result);
+	    boolean result1 = empService.checkEmployeePayrollSynWithDB("ram");
+	    assertTrue(result1);
+	}
+	
+	@Test
+	public void givenStartAndEndDateReturnEmployeeJoinedBetweenDates() throws EmployeeCustomException {
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+		List<EmployeePayrollData> employeePayrollData = employeePayrollService.readEmployeePayrollDataByDate(IOService.DB_IO, "2016-01-01","2020-01-01");
+		System.out.println(employeePayrollData);
+		assertEquals(2, employeePayrollData.size());
 	}
 }
