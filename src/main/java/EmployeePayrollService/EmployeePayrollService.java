@@ -105,4 +105,10 @@ public class EmployeePayrollService {
 		Map<String, Integer> employeeCountByGenderMap = employeePayrollDBService.getCountByGender();
 		return  employeeCountByGenderMap;
 	}
+
+
+	public Map<String, Integer> getLeastSalaryByGender() {
+		Map<String, Integer> employeeLeastSalaryMap = employeePayrollDBService.getLeastSalaryByGender();
+		return employeeLeastSalaryMap;
+	}
 }

@@ -13,7 +13,7 @@ public class EmployeePayrollDBService {
 	private static EmployeePayrollDBService employeePayrollDBService;
 	HashMap<String, Integer> operationMap;
 	private List<EmployeePayrollData> employeePayrollList;
-	
+
 	private EmployeePayrollDBService() {
 
 	}
@@ -76,7 +76,7 @@ public class EmployeePayrollDBService {
 	}
 
 	public List<EmployeePayrollData> getEmployeePayrollData(String name) {
-		 employeePayrollList = new ArrayList<>();
+		employeePayrollList = new ArrayList<>();
 		if (this.employeePayrollDataStatement == null)
 			this.prepareStatementForEmployeeData();
 		try {
@@ -148,7 +148,7 @@ public class EmployeePayrollDBService {
 	}
 
 	public Map<String, Integer> getCountByGender() {
-		String sql = "SELECT gender, COUNT(name) from employee_payroll_1 GROUP BY gender;";
+		String sql = "SELECT gender, COUNT(name) from new_employee_payroll GROUP BY gender;";
 		operationMap = new HashMap<String, Integer>();
 		try (Connection connection = this.getConnection()) {
 			Statement statement = connection.createStatement();
@@ -163,5 +163,23 @@ public class EmployeePayrollDBService {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	public Map<String, Integer> getLeastSalaryByGender() {
+		String sql = "SELECT gender, MIN(salary) from new_employee_payroll GROUP BY gender;";
+		operationMap = new HashMap<String, Integer>();
+		try (Connection connection = this.getConnection()) {
+			Statement statement = connection.createStatement();
+			ResultSet resultSet = statement.executeQuery(sql);
+			while (resultSet.next()) {
+				String gender = resultSet.getString("gender");
+				int count = resultSet.getInt("MIN(salary)");
+				operationMap.put(gender, count);
+			}
+			return operationMap;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }
