@@ -102,4 +102,11 @@ public class EmployeePayrollServiceTest {
 		boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Mark");
 		assertTrue(result);
 	}
+	@Test
+	public void givenEmployeeDeletedBeRemovedFromEmployeeList() throws EmployeeCustomException {
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService();;
+		employeePayrollService .readEmployeePayrollData(IOService.DB_IO);
+		List<EmployeePayrollData> list = employeePayrollService.deleteEmployee("Mark",false);
+		assertEquals(4, list.size());
+	}
 }
