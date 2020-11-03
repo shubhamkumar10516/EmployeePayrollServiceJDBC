@@ -3,6 +3,7 @@ package EmployeePayrollService;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -86,11 +87,19 @@ public class EmployeePayrollServiceTest {
 	}
 	
 	@Test
-	public void givenEmployeeDataInDBReturnEmployeeByGenderByAverageSalary() throws EmployeeException {
+	public void givenEmployeeDataInDBReturnEmployeeByGenderByAverageSalary() throws EmployeeCustomException {
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
 		Map<String, Integer> map = employeePayrollService.getAverageSalaryByGender();
 		assertEquals((int) map.get("M"), 2000000);
 		assertEquals((int) map.get("F"), 3000000);
 	}
 	
+	@Test
+	public void givenNewAddedShouldBeInSyncWithDB() throws EmployeeCustomException {
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+		employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
+		employeePayrollService.addEmployeeToPayroll("Mark","M",5000000,LocalDate.now());
+		boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Mark");
+		assertTrue(result);
+	}
 }
