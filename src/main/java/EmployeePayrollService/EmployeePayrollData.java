@@ -7,7 +7,7 @@ public class EmployeePayrollData {
 	private int id;
 	public String name;
 	public double salary;
-	private LocalDate startDate; 
+	private LocalDate startDate;
 	public EmployeePayrollData(int id, String name, double salary) {
 		this.id = id;
 		this.name = name;

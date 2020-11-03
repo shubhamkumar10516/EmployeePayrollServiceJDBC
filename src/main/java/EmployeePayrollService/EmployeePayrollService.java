@@ -130,4 +130,20 @@ public class EmployeePayrollService {
 		employeePayrollList.add(employeePayrollDBService.addEmployeeToPayroll(name,gender,salary,date));
 		
 	}
-}
+
+
+	public List<EmployeePayrollData> deleteEmployee(String name, boolean isActive) {
+		int update = employeePayrollDBService.deleteEmployee(name, isActive);
+		if(update == 1) {
+			Iterator<EmployeePayrollData> itr = employeePayrollList.iterator();
+			while(itr.hasNext()) {
+				EmployeePayrollData employee = itr.next();
+				if(employee.name.equals(name)) {
+					itr.remove();
+				}
+			}
+		}
+		return employeePayrollList;
+	}
+	}
+

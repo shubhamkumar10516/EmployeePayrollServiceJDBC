@@ -202,7 +202,40 @@ public class EmployeePayrollDBService {
 	}
 
 	public EmployeePayrollData addEmployeeToPayroll(String name, String gender, int salary, LocalDate date) {
-		
-		return null;
+		int employeeId = -1;
+		Connection connection = null ;
+		EmployeePayrollData employeePayrollData = null;
+		connection = this.getConnection();
+		try {
+			connection.setAutoCommit(false);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		try {
+			Statement statement = connection.createStatement();
+			String sql = String.format("INSERT INTO employee_payroll_1(name,gender,salary,start) VALUES ('%s','%s','%s','%s')",name,gender,salary,Date.valueOf(date));
+			int rowAffected = statement.executeUpdate(sql,statement.RETURN_GENERATED_KEYS);
+			if(rowAffected == 1) {
+				ResultSet resultSet = statement.getGeneratedKeys();
+				if(resultSet.next()) employeeId = resultSet.getInt(1);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return employeePayrollData;
 	}
-}
+
+	public int deleteEmployee(String name, boolean isActive) {
+		String sql = String.format("update employee_payroll set is_active =  %s where name = '%s';", isActive, name);
+		try (Connection connection = this.getConnection()) {
+			java.sql.Statement statement = connection.createStatement();
+			return statement.executeUpdate(sql);
+		} catch (SQLException e) {
+		e.printStackTrace();
+		}
+		return 0;
+	}
+	}
+
