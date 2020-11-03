@@ -1,5 +1,6 @@
 package EmployeePayrollService;
 
+import java.time.LocalDate;
 import java.util.*;
 
 public class EmployeePayrollService {
@@ -116,5 +117,17 @@ public class EmployeePayrollService {
 	public Map<String, Integer> getAverageSalaryByGender() {
 		Map<String, Integer> employeeAverageSalaryMap = employeePayrollDBService.getAverageSalaryByGender();
 		return employeeAverageSalaryMap;
+	}
+
+
+	public boolean checkEmployeePayrollInSyncWithDB(String name) {
+		List<EmployeePayrollData> employeePayrollDataList = employeePayrollDBService.getEmployeePayrollData(name);
+		return employeePayrollDataList.get(0).equals(getEmployeePayrollData(name));
+	}
+
+
+	public void addEmployeeToPayroll(String name, String gender, int salary, LocalDate date) {
+		employeePayrollList.add(employeePayrollDBService.addEmployeeToPayroll(name,gender,salary,date));
+		
 	}
 }

@@ -200,4 +200,9 @@ public class EmployeePayrollDBService {
 		}
 		return null;
 	}
+
+	public EmployeePayrollData addEmployeeToPayroll(String name, String gender, int salary, LocalDate date) {
+		
+		return null;
+	}
 }
