@@ -4,10 +4,11 @@ import java.time.LocalDate;
 
 public class EmployeePayrollData {
 
-	private int id;
+	public int id;
 	public String name;
 	public double salary;
-	private LocalDate startDate;
+	public LocalDate startDate;
+	public String gender;
 	public EmployeePayrollData(int id, String name, double salary) {
 		this.id = id;
 		this.name = name;
@@ -16,6 +17,10 @@ public class EmployeePayrollData {
 	public EmployeePayrollData(int id, String name, double salary, LocalDate startDate) {
         this(id, name, salary);
 		this.startDate = startDate;
+	}
+	public EmployeePayrollData(int id, String name, double salary, LocalDate startDate, String gender) {
+		this(id, name, salary, startDate);
+		this.gender = gender;
 	}
 	public String toString() {
 	     return (id+":"+ name+ ":"+ salary+" : "+startDate);

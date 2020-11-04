@@ -84,7 +84,7 @@ public class EmployeePayrollService {
 	public long countEntries(IOService fileIo) {
 		if (fileIo.equals(IOService.FILE_IO))
 			return new EmployeePayrolFileIOService().countEntries();
-		return 0;
+		return employeePayrollList.size();
 	}
 
 	public long readEmployeePayrollData(IOService ioService) {
@@ -126,13 +126,22 @@ public class EmployeePayrollService {
 	}
 
 
-	public void addEmployeeToPayroll(String name, String gender, int salary, LocalDate date) {
-		employeePayrollList.add(employeePayrollDBService.addEmployeeToPayroll(name,gender,salary,date));
-		
+	public void addEmployeeToPayroll(int id, String name, double salary, LocalDate date, String gender) {
+		employeePayrollList.add(employeePayrollDBService.addEmployeeToPayroll(id, name,salary,date,gender));
 	}
 
 
-	public List<EmployeePayrollData> deleteEmployee(String name, boolean isActive) {
+	public void addEmployeeToPayroll(List<EmployeePayrollData> employeePayrollDataList) {
+		
+		employeePayrollDataList.forEach(employee->{
+			System.out.println("Employee being added.... "+employee.name);
+			addEmployeeToPayroll(employee.id, employee.name, employee.salary, employee.startDate, employee.gender);
+			System.out.println("Employee added.... "+employee.name);
+		});
+		System.out.println(employeePayrollDataList);
+	}
+	
+public List<EmployeePayrollData> deleteEmployee(String name, boolean isActive) {
 		int update = employeePayrollDBService.deleteEmployee(name, isActive);
 		if(update == 1) {
 			Iterator<EmployeePayrollData> itr = employeePayrollList.iterator();
@@ -145,5 +154,5 @@ public class EmployeePayrollService {
 		}
 		return employeePayrollList;
 	}
-	}
+}
 
