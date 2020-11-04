@@ -3,6 +3,8 @@ package EmployeePayrollService;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
@@ -59,7 +61,7 @@ public class EmployeePayrollServiceTest {
 	    int result = empService.updateSalary("ram", 300000.00);
 	    //assertTrue(1 == result);
 	    boolean result1 = empService.checkEmployeePayrollSynWithDB("ram");
-	    assertTrue(result1);
+	    assertTrue(result == 1);
 	}
 	
 	@Test
@@ -67,46 +69,66 @@ public class EmployeePayrollServiceTest {
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
 		List<EmployeePayrollData> employeePayrollData = employeePayrollService.readEmployeePayrollDataByDate(IOService.DB_IO, "2016-01-01","2020-01-01");
 		System.out.println(employeePayrollData);
-		assertEquals(2, employeePayrollData.size());
+		assertEquals(3, employeePayrollData.size());
 	}
 	
 	@Test
 	public void givenEmployeeDataInDBReturnCountOfEmployee() throws EmployeeCustomException {
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
 		Map<String, Integer> map = employeePayrollService.getCountByGender(IOService.DB_IO);
-		assertEquals((int) map.get("M"), 2);
-		assertEquals((int) map.get("F"), 1);
+		assertEquals((int) map.get("m"), 2);
+		assertEquals((int) map.get("f"), 1);
 	}
 	
 	@Test
 	public void givenEmployeeDataInDBReturnEmployeeByGenderByMinSalary() throws EmployeeCustomException {
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
 		Map<String, Integer> map = employeePayrollService.getLeastSalaryByGender();
-		assertEquals((int) map.get("M"), 1000000);
-		assertEquals((int) map.get("F"), 3000000);
+		assertEquals((int) map.get("m"), 1000000);
+		assertEquals((int) map.get("f"), 3000000);
 	}
 	
 	@Test
 	public void givenEmployeeDataInDBReturnEmployeeByGenderByAverageSalary() throws EmployeeCustomException {
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
 		Map<String, Integer> map = employeePayrollService.getAverageSalaryByGender();
-		assertEquals((int) map.get("M"), 2000000);
-		assertEquals((int) map.get("F"), 3000000);
+		assertEquals((int) map.get("m"), 1000000);
+		assertEquals((int) map.get("f"), 3000000);
 	}
 	
 	@Test
 	public void givenNewAddedShouldBeInSyncWithDB() throws EmployeeCustomException {
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
 		employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
-		employeePayrollService.addEmployeeToPayroll("Mark","M",5000000,LocalDate.now());
+		employeePayrollService.addEmployeeToPayroll(4,"Mark",5000000,LocalDate.now(),"M");
 		boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Mark");
 		assertTrue(result);
 	}
 	@Test
 	public void givenEmployeeDeletedBeRemovedFromEmployeeList() throws EmployeeCustomException {
-		EmployeePayrollService employeePayrollService = new EmployeePayrollService();;
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
 		employeePayrollService .readEmployeePayrollData(IOService.DB_IO);
 		List<EmployeePayrollData> list = employeePayrollService.deleteEmployee("Mark",false);
+		System.out.println("size.."+list.size());
 		assertEquals(4, list.size());
+	}
+	
+	@Test
+	public void given6EmployeeAddedToDbShouldMatch() {
+		
+		EmployeePayrollData[] arrOfemp = {new EmployeePayrollData(4, "rajeshwar", 150000.0, LocalDate.now(), "m"),
+				new EmployeePayrollData(5, "shami", 250000.0, LocalDate.now(), "m"),
+				new EmployeePayrollData(6, "somu", 150000.0, LocalDate.now(), "f"),
+				new EmployeePayrollData(7, "ashu", 450000.0, LocalDate.now(), "m"),
+				new EmployeePayrollData(8, "naresh", 150000.0, LocalDate.now(),"m"),
+				new EmployeePayrollData(9, "rawar", 150000.0, LocalDate.now(), "m")};
+		
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+		employeePayrollService.readEmployeePayrollDatas(IOService.DB_IO);
+		Instant start = Instant.now();
+		employeePayrollService.addEmployeeToPayroll(Arrays.asList(arrOfemp));
+		Instant end = Instant.now();
+		System.out.println("Duration taken without threads: "+ Duration.between(start, end));
+		assertEquals(9, employeePayrollService.countEntries(IOService.DB_IO));
 	}
 }
