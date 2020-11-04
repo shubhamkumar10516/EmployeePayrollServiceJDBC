@@ -119,7 +119,7 @@ public class EmployeePayrollDBService {
 
 	public List<EmployeePayrollData> getDataWithinDates(String start, String end) {
 		String sql = String.format(
-				"SELECT * FROM new_employee_payroll WHERE start BETWEEN CAST('%s' AS DATE) AND CAST('%s' AS DATE)",
+				"SELECT * FROM employee_payroll WHERE start BETWEEN CAST('%s' AS DATE) AND CAST('%s' AS DATE)",
 				start, end);
 		return getDataFromDatabaseBySQL(sql);
 	}
@@ -148,7 +148,7 @@ public class EmployeePayrollDBService {
 	}
 
 	public Map<String, Integer> getCountByGender() {
-		String sql = "SELECT gender, COUNT(name) from new_employee_payroll GROUP BY gender;";
+		String sql = "SELECT gender, COUNT(name) from employee_payroll GROUP BY gender;";
 		operationMap = new HashMap<String, Integer>();
 		try (Connection connection = this.getConnection()) {
 			Statement statement = connection.createStatement();
@@ -166,7 +166,7 @@ public class EmployeePayrollDBService {
 	}
 
 	public Map<String, Integer> getLeastSalaryByGender() {
-		String sql = "SELECT gender, MIN(salary) from new_employee_payroll GROUP BY gender;";
+		String sql = "SELECT gender, MIN(salary) from employee_payroll GROUP BY gender;";
 		operationMap = new HashMap<String, Integer>();
 		try (Connection connection = this.getConnection()) {
 			Statement statement = connection.createStatement();
@@ -184,11 +184,11 @@ public class EmployeePayrollDBService {
 	}
 
 	public Map<String, Integer> getAverageSalaryByGender() {
-		String sql = "SELECT gender, AVG(salary) from employee_payroll_1 GROUP BY gender;";
+		String sql = "SELECT gender, AVG(salary) from employee_payroll GROUP BY gender;";
 		operationMap = new HashMap<String, Integer>();
 		try (Connection connection = this.getConnection()) {
-			java.sql.Statement statement = connection.createStatement();
-			ResultSet resultSet = statement.executeQuery(sql);
+			PreparedStatement statement = connection.prepareStatement(sql);
+			ResultSet resultSet = statement.executeQuery();
 			while (resultSet.next()) {
 				String gender = resultSet.getString("gender");
 				int count = resultSet.getInt("AVG(salary)");
@@ -196,13 +196,12 @@ public class EmployeePayrollDBService {
 			}
 			return operationMap;
 		}catch (SQLException e) {
-			e.printStackTrace();
+			System.out.println("Exception occurred..."+e);
 		}
 		return null;
 	}
 
-	public EmployeePayrollData addEmployeeToPayroll(String name, String gender, int salary, LocalDate date) {
-		int employeeId = -1;
+	public EmployeePayrollData addEmployeeToPayroll(int id, String name,double salary, LocalDate date,String gender) {
 		Connection connection = null ;
 		EmployeePayrollData employeePayrollData = null;
 		connection = this.getConnection();
@@ -213,15 +212,16 @@ public class EmployeePayrollDBService {
 			e.printStackTrace();
 		} 
 		try {
-			Statement statement = connection.createStatement();
-			String sql = String.format("INSERT INTO employee_payroll_1(name,gender,salary,start) VALUES ('%s','%s','%s','%s')",name,gender,salary,Date.valueOf(date));
-			int rowAffected = statement.executeUpdate(sql,statement.RETURN_GENERATED_KEYS);
-			if(rowAffected == 1) {
-				ResultSet resultSet = statement.getGeneratedKeys();
-				if(resultSet.next()) employeeId = resultSet.getInt(1);
-			}
+			String sql = "INSERT INTO employee_payroll VALUES (?,?,?,?,?)";
+			PreparedStatement statement = connection.prepareStatement(sql);
+			statement.setInt(1, id);
+			statement.setString(2, name);
+			statement.setDouble(3, salary);
+			statement.setDate(4, Date.valueOf(date));
+			statement.setString(5, String.valueOf(gender));
+			int rowAffected = statement.executeUpdate();
+			System.out.println("records added..");
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return employeePayrollData;
