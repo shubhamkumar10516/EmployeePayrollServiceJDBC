@@ -1,6 +1,7 @@
 package EmployeePayrollService;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class EmployeePayrollData {
 
@@ -27,5 +28,10 @@ public class EmployeePayrollData {
 	}
 	public String display() {
 	     return (id+":"+ name+ ":"+ salary);
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(name, gender, salary, startDate);
 	}
 }

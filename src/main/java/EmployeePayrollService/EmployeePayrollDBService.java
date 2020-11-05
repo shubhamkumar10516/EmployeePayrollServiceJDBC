@@ -7,8 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class EmployeePayrollDBService {
 
+public class EmployeePayrollDBService {
+	private int connectionCounter = 0;
 	private PreparedStatement employeePayrollDataStatement;
 	private static EmployeePayrollDBService employeePayrollDBService;
 	HashMap<String, Integer> operationMap;
@@ -25,12 +26,15 @@ public class EmployeePayrollDBService {
 	}
 
 	private Connection getConnection() {
+		connectionCounter++;
 		String jdbcURL = "jdbc:mysql://localhost:3306/new_payroll_service?useSSL=false";
 		String user = "root";
 		String password = "password";
 		Connection connection = null;
 		try {
+			System.out.println("connecting to " + Thread.currentThread().getName() + " id : " + connectionCounter);
 			connection = DriverManager.getConnection(jdbcURL, user, password);
+			System.out.println("connected to " + Thread.currentThread().getName() + " id : " + connectionCounter);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -119,8 +123,8 @@ public class EmployeePayrollDBService {
 
 	public List<EmployeePayrollData> getDataWithinDates(String start, String end) {
 		String sql = String.format(
-				"SELECT * FROM employee_payroll WHERE start BETWEEN CAST('%s' AS DATE) AND CAST('%s' AS DATE)",
-				start, end);
+				"SELECT * FROM employee_payroll WHERE start BETWEEN CAST('%s' AS DATE) AND CAST('%s' AS DATE)", start,
+				end);
 		return getDataFromDatabaseBySQL(sql);
 	}
 
@@ -137,11 +141,8 @@ public class EmployeePayrollDBService {
 				employeePayrollList.add(new EmployeePayrollData(id, name, salary, start));
 			}
 			return employeePayrollList;
-			// } catch(EmployeeCustomException e) {
-			// throw new EmployeeCustomException(e.getMessage(),e.type);
-			// }
+			
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
@@ -195,32 +196,29 @@ public class EmployeePayrollDBService {
 				operationMap.put(gender, count);
 			}
 			return operationMap;
-		}catch (SQLException e) {
-			System.out.println("Exception occurred..."+e);
+		} catch (SQLException e) {
+			System.out.println("Exception occurred..." + e);
 		}
 		return null;
 	}
 
-	public EmployeePayrollData addEmployeeToPayroll(int id, String name,double salary, LocalDate date,String gender) {
-		Connection connection = null ;
+	public EmployeePayrollData addEmployeeToPayroll(String name, double salary, LocalDate date, String gender) {
+		int employeeId = -1;
 		EmployeePayrollData employeePayrollData = null;
-		connection = this.getConnection();
-		try {
-			connection.setAutoCommit(false);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-		try {
-			String sql = "INSERT INTO employee_payroll VALUES (?,?,?,?,?)";
-			PreparedStatement statement = connection.prepareStatement(sql);
-			statement.setInt(1, id);
-			statement.setString(2, name);
-			statement.setDouble(3, salary);
-			statement.setDate(4, Date.valueOf(date));
-			statement.setString(5, String.valueOf(gender));
-			int rowAffected = statement.executeUpdate();
-			System.out.println("records added..");
+		String sql = String.format(
+				"INSERT INTO employee_payroll(name,gender,salary,start) VALUES ('%s','%s','%s','%s')", name, gender,
+				salary, Date.valueOf(date));
+		try (Connection connection = this.getConnection()) {
+			java.sql.Statement statement = connection.createStatement();
+			System.out.println("******"+statement);
+			int rowAffected = statement.executeUpdate(sql, statement.RETURN_GENERATED_KEYS);
+			System.out.println("****"+ rowAffected);
+			if (rowAffected == 1) {
+				ResultSet resultSet = statement.getGeneratedKeys();
+				if (resultSet.next())
+					employeeId = resultSet.getInt(1);
+			}
+			employeePayrollData = new EmployeePayrollData(employeeId, name, salary, date, gender);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -233,9 +231,8 @@ public class EmployeePayrollDBService {
 			java.sql.Statement statement = connection.createStatement();
 			return statement.executeUpdate(sql);
 		} catch (SQLException e) {
-		e.printStackTrace();
+			e.printStackTrace();
 		}
 		return 0;
 	}
-	}
-
+}
