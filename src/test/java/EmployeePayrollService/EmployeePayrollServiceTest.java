@@ -116,12 +116,12 @@ public class EmployeePayrollServiceTest {
 	@Test
 	public void given6EmployeeAddedToDbShouldMatch() {
 		
-		EmployeePayrollData[] arrOfemp = {new EmployeePayrollData(4, "rajeshwar", 150000.0, LocalDate.now(), "m"),
-				new EmployeePayrollData(5, "shami", 250000.0, LocalDate.now(), "m"),
-				new EmployeePayrollData(6, "somu", 150000.0, LocalDate.now(), "f"),
-				new EmployeePayrollData(7, "ashu", 450000.0, LocalDate.now(), "m"),
-				new EmployeePayrollData(8, "naresh", 150000.0, LocalDate.now(),"m"),
-				new EmployeePayrollData(9, "rawar", 150000.0, LocalDate.now(), "m")};
+		EmployeePayrollData[] arrOfemp = {new EmployeePayrollData(0, "rajeshwar", 150000.0, LocalDate.now(), "m"),
+				new EmployeePayrollData(0, "shami", 250000.0, LocalDate.now(), "m"),
+				new EmployeePayrollData(0, "somu", 150000.0, LocalDate.now(), "f"),
+				new EmployeePayrollData(0, "ashu", 450000.0, LocalDate.now(), "m"),
+				new EmployeePayrollData(0, "naresh", 150000.0, LocalDate.now(),"m"),
+				new EmployeePayrollData(0, "rawar", 150000.0, LocalDate.now(), "m")};
 		
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
 		employeePayrollService.readEmployeePayrollDatas(IOService.DB_IO);
@@ -129,6 +129,10 @@ public class EmployeePayrollServiceTest {
 		employeePayrollService.addEmployeeToPayroll(Arrays.asList(arrOfemp));
 		Instant end = Instant.now();
 		System.out.println("Duration taken without threads: "+ Duration.between(start, end));
-		assertEquals(9, employeePayrollService.countEntries(IOService.DB_IO));
+		Instant start1 = Instant.now();
+		employeePayrollService.addEmployeeToPayrollUsingThreads(Arrays.asList(arrOfemp));
+		Instant end1 = Instant.now();
+		System.out.println("Duration taken with threads: "+ Duration.between(start, end));
+		assertEquals(15, employeePayrollService.countEntries(IOService.DB_IO));
 	}
 }
